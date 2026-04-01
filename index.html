@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZULU | خدمات رقمية احترافية</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Syne:wght@700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* ══ LIGHT MODE = مشرق (default) ══ */
+    :root {
+      --bg:        #eef2ff;
+      --bg2:       #e4eaff;
+      --surface:   #ffffff;
+      --surface2:  #f4f6ff;
+      --border:    rgba(0,80,220,0.13);
+      --accent:    #2255ff;
+      --accent2:   #00aaff;
+      --accent3:   #7c3fff;
+      --text:      #080d28;
+      --muted:     #5a6a90;
+      --shadow:    rgba(34,85,255,0.20);
+      --card-glow: rgba(34,85,255,0.07);
+      --nav-bg:    rgba(238,242,255,0.85);
+      --orb1:      rgba(34,85,255,0.13);
+      --orb2:      rgba(0,170,255,0.10);
+      --btn-shadow-bot: rgba(10,40,160,0.55);
+      --btn-shadow-top: rgba(255,255,255,0.85);
+    }
+
+    /* ══ DARK MODE = ليلي ══ */
+    body.dark {
+      --bg:        #060914;
+      --bg2:       #09101f;
+      --surface:   #0d1424;
+      --surface2:  #111d35;
+      --border:    rgba(0,180,255,0.13);
+      --accent:    #00b4ff;
+      --accent2:   #0066ff;
+      --accent3:   #9d6fff;
+      --text:      #e8f0ff;
+      --muted:     #7a9bb5;
+      --shadow:    rgba(0,0,0,0.55);
+      --card-glow: rgba(0,180,255,0.06);
+      --nav-bg:    rgba(6,9,20,0.85);
+      --orb1:      rgba(0,102,255,0.18);
+      --orb2:      rgba(0,180,255,0.12);
+      --btn-shadow-bot: rgba(0,0,0,0.65);
+      --btn-shadow-top: rgba(100,200,255,0.22);
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+
+    body {
+      font-family:'Cairo',sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      min-height:100vh;
+      overflow-x:hidden;
+      transition:background 0.4s,color 0.4s;
+    }
+    body.ltr { direction:ltr; }
+
+    /* noise overlay */
+    body::after {
+      content:''; position:fixed; inset:0; pointer-events:none; z-index:0; opacity:0.55;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    }
+
+    /* orbs */
+    .orb { position:fixed; border-radius:50%; filter:blur(130px); pointer-events:none; z-index:0; transition:background 0.5s; }
+    .orb-1 { width:700px; height:700px; background:radial-gradient(circle,var(--orb1) 0%,transparent 70%); top:-260px; right:-260px; }
+    .orb-2 { width:550px; height:550px; background:radial-gradient(circle,var(--orb2) 0%,transparent 70%); bottom:-100px; left:-180px; }
+    .orb-3 { width:380px; height:380px; background:radial-gradient(circle,rgba(124,63,255,0.07) 0%,transparent 70%); top:45%; left:50%; transform:translate(-50%,-50%); }
+
+    /* ══ NAV ══ */
+    nav {
+      position:fixed; top:0; left:0; right:0; z-index:200;
+      padding:14px 36px;
+      display:flex; align-items:center; justify-content:space-between;
+      background:var(--nav-bg);
+      backdrop-filter:blur(22px);
+      border-bottom:1px solid var(--border);
+      transition:background 0.4s,border-color 0.4s;
+    }
+
+    /* ZULU LOGO */
+    .nav-logo {
+      font-family:'Syne',sans-serif;
+      font-size:1.75rem; font-weight:900; letter-spacing:5px;
+      background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 50%,var(--accent3) 100%);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+      position:relative; text-transform:uppercase; cursor:default;
+    }
+    .nav-logo::after {
+      content:''; position:absolute; bottom:-5px; left:0; right:0; height:2.5px;
+      background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent3));
+      border-radius:2px;
+    }
+
+    .nav-links { display:flex; gap:8px; align-items:center; }
+    .nav-link {
+      color:var(--muted); text-decoration:none; font-size:0.9rem; font-weight:600;
+      padding:8px 13px; border-radius:10px; transition:all 0.2s;
+    }
+    .nav-link:hover { color:var(--text); background:var(--surface2); }
+
+    /* icon buttons */
+    .icon-btn {
+      width:38px; height:38px; border-radius:10px;
+      background:var(--surface); border:1.5px solid var(--border);
+      color:var(--muted); cursor:pointer; font-size:1rem;
+      display:flex; align-items:center; justify-content:center;
+      transition:all 0.18s; font-family:inherit;
+      box-shadow:0 2px 0 var(--border), 0 4px 12px rgba(0,0,0,0.06);
+    }
+    .icon-btn:hover {
+      color:var(--accent); border-color:var(--accent);
+      transform:translateY(-2px);
+      box-shadow:0 4px 0 color-mix(in srgb,var(--accent) 28%,transparent), 0 6px 16px var(--shadow);
+    }
+    .icon-btn:active { transform:translateY(1px); box-shadow:0 1px 0 var(--border); }
+
+    /* ══ 3D BUTTONS ══ */
+    .btn-3d {
+      position:relative; display:inline-flex; align-items:center; justify-content:center; gap:8px;
+      padding:12px 26px; border-radius:13px;
+      font-family:inherit; font-size:0.92rem; font-weight:700;
+      cursor:pointer; border:none; text-decoration:none;
+      transition:all 0.15s cubic-bezier(0.23,1,0.32,1);
+      user-select:none;
+    }
+    .btn-3d-primary {
+      background:linear-gradient(155deg, color-mix(in srgb,var(--accent) 75%,white 25%), var(--accent2));
+      color:#fff;
+      box-shadow:
+        0 1px 0 1px var(--btn-shadow-top) inset,
+        0 6px 0 0 var(--btn-shadow-bot),
+        0 10px 24px var(--shadow);
+    }
+    .btn-3d-primary:hover {
+      transform:translateY(-4px) scale(1.02);
+      box-shadow:
+        0 1px 0 1px var(--btn-shadow-top) inset,
+        0 10px 0 0 var(--btn-shadow-bot),
+        0 16px 32px var(--shadow);
+    }
+    .btn-3d-primary:active {
+      transform:translateY(3px) scale(0.98);
+      box-shadow:
+        0 1px 0 1px var(--btn-shadow-top) inset,
+        0 2px 0 0 var(--btn-shadow-bot),
+        0 4px 10px var(--shadow);
+    }
+    .btn-3d-outline {
+      background:var(--surface);
+      color:var(--accent);
+      border:1.5px solid var(--accent);
+      box-shadow:
+        0 1px 0 1px rgba(255,255,255,0.5) inset,
+        0 5px 0 0 color-mix(in srgb,var(--accent) 38%,transparent),
+        0 8px 18px rgba(0,85,255,0.10);
+    }
+    .btn-3d-outline:hover {
+      transform:translateY(-4px) scale(1.02);
+      box-shadow:
+        0 1px 0 1px rgba(255,255,255,0.5) inset,
+        0 9px 0 0 color-mix(in srgb,var(--accent) 38%,transparent),
+        0 14px 28px rgba(0,85,255,0.16);
+    }
+    .btn-3d-outline:active {
+      transform:translateY(3px) scale(0.98);
+      box-shadow:
+        0 1px 0 1px rgba(255,255,255,0.5) inset,
+        0 2px 0 0 color-mix(in srgb,var(--accent) 38%,transparent),
+        0 4px 8px rgba(0,85,255,0.08);
+    }
+    .btn-lg { padding:15px 34px; font-size:1rem; border-radius:14px; }
+    .btn-sm { padding:10px 20px; font-size:0.88rem; border-radius:11px; }
+
+    /* WhatsApp 3D */
+    .btn-whatsapp {
+      width:100%; padding:17px;
+      background:linear-gradient(155deg,#3ddf80,#25d366,#128c7e);
+      color:white; border:none; border-radius:14px;
+      font-size:1.06rem; font-weight:700; cursor:pointer; font-family:inherit;
+      display:flex; align-items:center; justify-content:center; gap:12px;
+      margin-top:8px;
+      box-shadow:
+        0 1px 0 1px rgba(255,255,255,0.38) inset,
+        0 6px 0 0 #0b5233,
+        0 10px 26px rgba(37,211,102,0.28);
+      transition:all 0.15s cubic-bezier(0.23,1,0.32,1);
+    }
+    .btn-whatsapp:hover {
+      transform:translateY(-4px) scale(1.01);
+      box-shadow:
+        0 1px 0 1px rgba(255,255,255,0.38) inset,
+        0 10px 0 0 #0b5233,
+        0 18px 36px rgba(37,211,102,0.38);
+    }
+    .btn-whatsapp:active {
+      transform:translateY(3px) scale(0.99);
+      box-shadow:
+        0 1px 0 1px rgba(255,255,255,0.38) inset,
+        0 2px 0 0 #0b5233,
+        0 4px 10px rgba(37,211,102,0.18);
+    }
+
+    /* ══ HERO ══ */
+    .hero {
+      min-height:100vh; display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
+      text-align:center; padding:120px 40px 80px; position:relative;
+    }
+    .hero-badge {
+      display:inline-flex; align-items:center; gap:8px;
+      background:color-mix(in srgb,var(--accent) 9%,transparent);
+      border:1px solid color-mix(in srgb,var(--accent) 28%,transparent);
+      padding:8px 22px; border-radius:50px;
+      font-size:0.84rem; color:var(--accent); font-weight:700;
+      margin-bottom:32px;
+      animation:fadeUp 0.6s ease both;
+      box-shadow:0 4px 18px color-mix(in srgb,var(--accent) 12%,transparent);
+    }
+    .dot-live { width:8px; height:8px; border-radius:50%; background:var(--accent); animation:blink 2s infinite; display:inline-block; }
+
+    .hero-title {
+      font-family:'Syne','Cairo',sans-serif;
+      font-size:clamp(2.5rem,7vw,5.8rem); font-weight:900; line-height:1.08;
+      margin-bottom:24px; animation:fadeUp 0.7s 0.1s ease both;
+    }
+    .hero-title .grad {
+      background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 45%,var(--accent3) 100%);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    }
+    .hero-sub {
+      font-size:1.08rem; color:var(--muted); max-width:560px; line-height:1.88;
+      margin-bottom:48px; animation:fadeUp 0.7s 0.2s ease both;
+    }
+    .hero-btns { display:flex; gap:16px; flex-wrap:wrap; justify-content:center; animation:fadeUp 0.7s 0.3s ease both; }
+
+    .stats {
+      display:flex; gap:48px; margin-top:80px; padding-top:48px;
+      border-top:1px solid var(--border);
+      animation:fadeUp 0.7s 0.4s ease both;
+      flex-wrap:wrap; justify-content:center;
+    }
+    .stat { text-align:center; }
+    .stat-num {
+      font-family:'Syne','Cairo',sans-serif; font-size:2.5rem; font-weight:900;
+      background:linear-gradient(135deg,var(--accent),var(--accent3));
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    }
+    .stat-label { font-size:0.85rem; color:var(--muted); margin-top:4px; font-weight:600; }
+
+    /* ══ SECTIONS ══ */
+    section { padding:100px 40px; position:relative; }
+    .sec-alt { background:var(--bg2); transition:background 0.4s; }
+
+    .section-tag {
+      display:inline-block;
+      background:color-mix(in srgb,var(--accent) 9%,transparent);
+      border:1px solid color-mix(in srgb,var(--accent) 22%,transparent);
+      color:var(--accent); font-size:0.72rem; font-weight:800;
+      padding:5px 17px; border-radius:50px; letter-spacing:3px; text-transform:uppercase; margin-bottom:18px;
+    }
+    .section-title {
+      font-family:'Syne','Cairo',sans-serif;
+      font-size:clamp(1.7rem,4vw,3rem); font-weight:900; margin-bottom:14px;
+    }
+    .section-title .grad {
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    }
+    .section-sub { color:var(--muted); font-size:0.98rem; max-width:500px; line-height:1.85; }
+    .center { text-align:center; }
+    .container { max-width:1100px; margin:0 auto; }
+
+    /* ══ SERVICES ══ */
+    .services-grid {
+      max-width:1100px; margin:60px auto 0;
+      display:grid; grid-template-columns:repeat(auto-fit,minmax(290px,1fr)); gap:18px;
+    }
+    .service-card {
+      background:var(--surface); border:1px solid var(--border); border-radius:18px;
+      padding:34px 30px; position:relative; overflow:hidden;
+      transition:all 0.4s cubic-bezier(0.23,1,0.32,1);
+      box-shadow:0 2px 20px rgba(0,0,0,0.05);
+    }
+    .service-card::before {
+      content:''; position:absolute; inset:0;
+      background:linear-gradient(135deg,var(--card-glow),transparent);
+      opacity:0; transition:opacity 0.3s;
+    }
+    .service-card:hover {
+      transform:translateY(-10px);
+      border-color:color-mix(in srgb,var(--accent) 40%,transparent);
+      box-shadow:0 20px 50px rgba(0,0,0,0.12),0 0 0 1px color-mix(in srgb,var(--accent) 15%,transparent);
+    }
+    .service-card:hover::before { opacity:1; }
+    .card-num {
+      position:absolute; top:22px; left:22px;
+      font-size:0.7rem; color:color-mix(in srgb,var(--accent) 32%,transparent); font-weight:800; letter-spacing:1px;
+    }
+    body.ltr .card-num { right:22px; left:auto; }
+    .service-icon-wrap {
+      width:60px; height:60px;
+      background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 13%,transparent),color-mix(in srgb,var(--accent2) 7%,transparent));
+      border:1px solid color-mix(in srgb,var(--accent) 18%,transparent);
+      border-radius:15px; display:flex; align-items:center; justify-content:center;
+      font-size:1.65rem; margin-bottom:22px; transition:transform 0.3s;
+    }
+    .service-card:hover .service-icon-wrap { transform:scale(1.12) rotate(-7deg); }
+    .service-name { font-size:1.08rem; font-weight:800; margin-bottom:11px; }
+    .service-desc { color:var(--muted); font-size:0.91rem; line-height:1.85; }
+
+    /* ══ WHY ══ */
+    .why-grid {
+      max-width:1000px; margin:58px auto 0;
+      display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px;
+    }
+    .why-card {
+      background:var(--surface); border:1px solid var(--border); border-radius:16px;
+      padding:28px 22px; text-align:center;
+      transition:all 0.3s; box-shadow:0 2px 14px rgba(0,0,0,0.05);
+    }
+    .why-card:hover { transform:translateY(-6px); border-color:color-mix(in srgb,var(--accent) 35%,transparent); box-shadow:0 14px 36px rgba(0,0,0,0.10); }
+    .why-icon { font-size:2.1rem; margin-bottom:13px; }
+    .why-title { font-weight:800; font-size:0.98rem; margin-bottom:8px; }
+    .why-desc { font-size:0.87rem; color:var(--muted); line-height:1.75; }
+
+    /* ══ REVIEWS ══ */
+    .reviews-grid {
+      max-width:1000px; margin:58px auto 0;
+      display:grid; grid-template-columns:repeat(auto-fit,minmax(275px,1fr)); gap:18px;
+    }
+    .review-card {
+      background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:28px;
+      transition:all 0.3s; box-shadow:0 2px 14px rgba(0,0,0,0.05);
+    }
+    .review-card:hover { transform:translateY(-6px); border-color:color-mix(in srgb,var(--accent) 30%,transparent); box-shadow:0 14px 36px rgba(0,0,0,0.10); }
+    .review-stars { color:#f5a623; font-size:0.95rem; letter-spacing:2px; margin-bottom:13px; }
+    .review-text { color:var(--muted); font-size:0.93rem; line-height:1.82; margin-bottom:18px; }
+    .review-author { display:flex; align-items:center; gap:12px; }
+    .review-avatar {
+      width:44px; height:44px; border-radius:50%;
+      background:linear-gradient(135deg,var(--accent),var(--accent3));
+      display:flex; align-items:center; justify-content:center;
+      color:#fff; font-weight:900; font-size:1rem; flex-shrink:0;
+    }
+    .review-name { font-weight:800; font-size:0.93rem; }
+    .review-role { font-size:0.78rem; color:var(--muted); margin-top:2px; }
+
+    /* ══ CONTACT ══ */
+    .contact-wrap { max-width:660px; margin:60px auto 0; }
+    .contact-card {
+      background:var(--surface); border:1px solid var(--border); border-radius:24px; padding:48px;
+      box-shadow:0 4px 40px rgba(0,0,0,0.07);
+    }
+    .form-group { margin-bottom:18px; }
+    .form-group label { display:block; font-size:0.86rem; font-weight:700; color:var(--muted); margin-bottom:8px; letter-spacing:0.3px; }
+    .form-group input, .form-group textarea, .form-group select {
+      width:100%; background:var(--surface2); border:1.5px solid var(--border);
+      border-radius:11px; padding:12px 15px;
+      color:var(--text); font-size:0.96rem; font-family:inherit;
+      transition:all 0.3s; outline:none; direction:inherit;
+    }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+      border-color:var(--accent);
+      background:color-mix(in srgb,var(--accent) 4%,var(--surface2));
+      box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 12%,transparent);
+    }
+    .form-group textarea { resize:vertical; min-height:125px; }
+    .form-group select { cursor:pointer; }
+    .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+
+    .success-msg {
+      display:none; margin-top:14px; padding:14px 18px;
+      background:color-mix(in srgb,#25d366 10%,transparent);
+      border:1px solid color-mix(in srgb,#25d366 28%,transparent);
+      border-radius:11px; color:#1a9e52; font-weight:700; text-align:center; font-size:0.95rem;
+    }
+    body.dark .success-msg { color:#25d366; }
+
+    .contact-info { display:grid; grid-template-columns:1fr 1fr; gap:13px; margin-top:28px; padding-top:26px; border-top:1px solid var(--border); }
+    .info-item {
+      background:var(--surface2); border:1px solid var(--border); border-radius:13px; padding:17px;
+      display:flex; align-items:center; gap:11px; transition:all 0.2s;
+    }
+    .info-item:hover { border-color:color-mix(in srgb,var(--accent) 30%,transparent); }
+    .info-icon { font-size:1.3rem; }
+    .info-label { font-size:0.76rem; color:var(--muted); font-weight:600; }
+    .info-val { font-size:0.9rem; font-weight:700; margin-top:2px; direction:ltr; }
+
+    /* ══ FOOTER ══ */
+    footer {
+      background:var(--surface); border-top:1px solid var(--border);
+      padding:34px 40px; text-align:center; color:var(--muted); font-size:0.88rem;
+      transition:background 0.4s;
+    }
+    footer a { color:var(--accent); text-decoration:none; font-weight:600; }
+    .footer-logo {
+      font-family:'Syne',sans-serif; font-size:1.5rem; font-weight:900; letter-spacing:5px;
+      background:linear-gradient(135deg,var(--accent),var(--accent2),var(--accent3));
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+      margin-bottom:10px; display:inline-block;
+    }
+
+    /* ══ REVEAL ══ */
+    .reveal { opacity:0; transform:translateY(28px); transition:all 0.65s cubic-bezier(0.23,1,0.32,1); }
+    .reveal.visible { opacity:1; transform:translateY(0); }
+    .d1 { transition-delay:0.1s; } .d2 { transition-delay:0.2s; } .d3 { transition-delay:0.3s; }
+
+    @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes blink { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.35;transform:scale(0.75)} }
+
+    @media(max-width:768px){
+      nav { padding:12px 16px; }
+      .hide-mob { display:none; }
+      section { padding:65px 16px; }
+      .hero { padding:95px 16px 55px; }
+      .hero-title { font-size:2.2rem; }
+      .form-grid { grid-template-columns:1fr; }
+      .contact-card { padding:26px 18px; }
+      .contact-info { grid-template-columns:1fr; }
+      .stats { gap:26px; }
+      .why-grid { grid-template-columns:1fr 1fr; }
+    }
+    @media(max-width:480px){
+      .why-grid,.reviews-grid { grid-template-columns:1fr; }
+      .hero-btns { flex-direction:column; align-items:center; }
+      .btn-lg { width:100%; text-align:center; }
+    }
+  </style>
+</head>
+<body><!-- light mode = default -->
+
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<!-- ══ NAV ══ -->
+<nav>
+  <div class="nav-logo">ZULU</div>
+  <div class="nav-links">
+    <a href="#services" class="nav-link hide-mob" data-ar="الخدمات" data-en="Services">الخدمات</a>
+    <a href="#why" class="nav-link hide-mob" data-ar="لماذا أنا" data-en="Why Me">لماذا أنا</a>
+    <a href="#reviews" class="nav-link hide-mob" data-ar="آراء العملاء" data-en="Reviews">آراء العملاء</a>
+    <a href="#contact" class="nav-link hide-mob" data-ar="تواصل" data-en="Contact">تواصل</a>
+    <button class="icon-btn" id="themeBtn" onclick="toggleTheme()">🌙</button>
+    <button class="icon-btn" id="langBtn" onclick="toggleLang()">EN</button>
+    <a href="#contact" class="btn-3d btn-3d-primary btn-sm" data-ar="ابدأ الآن" data-en="Get Started">ابدأ الآن</a>
+  </div>
+</nav>
+
+<!-- ══ HERO ══ -->
+<section class="hero">
+  <div class="hero-badge">
+    <span class="dot-live"></span>
+    <span data-ar="متاح للعمل الآن" data-en="Available for work">متاح للعمل الآن</span>
+  </div>
+
+  <h1 class="hero-title">
+    <span class="grad" data-ar="حلول رقمية" data-en="Digital Solutions">حلول رقمية</span><br>
+    <span data-ar="تُنمّي عملك" data-en="That Grow Your Business">تُنمّي عملك</span>
+  </h1>
+
+  <p class="hero-sub"
+     data-ar="أبني مواقع احترافية، متاجر إلكترونية وتطبيقات رقمية متكاملة بأعلى جودة وأسرع وقت توصيل"
+     data-en="I build professional websites, e-commerce stores and digital apps with top quality and fast delivery">
+    أبني مواقع احترافية، متاجر إلكترونية وتطبيقات رقمية متكاملة بأعلى جودة وأسرع وقت توصيل
+  </p>
+
+  <div class="hero-btns">
+    <a href="#contact" class="btn-3d btn-3d-primary btn-lg" data-ar="ابدأ مشروعك" data-en="Start Your Project">ابدأ مشروعك</a>
+    <a href="#services" class="btn-3d btn-3d-outline btn-lg" data-ar="اكتشف الخدمات" data-en="Explore Services">اكتشف الخدمات</a>
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-num">70+</div>
+      <div class="stat-label" data-ar="مشروع منجز" data-en="Projects Done">مشروع منجز</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">67+</div>
+      <div class="stat-label" data-ar="عميل راضٍ" data-en="Happy Clients">عميل راضٍ</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">4+</div>
+      <div class="stat-label" data-ar="سنوات خبرة" data-en="Years Experience">سنوات خبرة</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">12/24</div>
+      <div class="stat-label" data-ar="دعم فني" data-en="Support">دعم فني</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SERVICES ══ -->
+<section id="services" class="sec-alt">
+  <div class="container center">
+    <div class="section-tag" data-ar="الخدمات" data-en="SERVICES">الخدمات</div>
+    <h2 class="section-title reveal"><span class="grad" data-ar="ما الذي أقدمه" data-en="What I Offer">ما الذي أقدمه</span></h2>
+    <p class="section-sub reveal d1" style="margin:0 auto"
+       data-ar="خدمات احترافية شاملة تغطي كل احتياجاتك الرقمية من الفكرة حتى الإطلاق"
+       data-en="Comprehensive professional services covering all your digital needs from idea to launch">
+      خدمات احترافية شاملة تغطي كل احتياجاتك الرقمية من الفكرة حتى الإطلاق
+    </p>
+  </div>
+  <div class="services-grid">
+    <div class="service-card reveal"><div class="card-num">01</div><div class="service-icon-wrap">🌐</div><div class="service-name" data-ar="بناء مواقع إلكترونية" data-en="Web Development">بناء مواقع إلكترونية</div><div class="service-desc" data-ar="مواقع عصرية سريعة وآمنة مع تحسين محركات البحث وتصميم متجاوب مع جميع الشاشات" data-en="Modern, fast and secure websites with SEO optimization and full responsiveness">مواقع عصرية سريعة وآمنة مع تحسين محركات البحث وتصميم متجاوب مع جميع الشاشات</div></div>
+    <div class="service-card reveal d1"><div class="card-num">02</div><div class="service-icon-wrap">🎨</div><div class="service-name" data-ar="تصميم UI/UX" data-en="UI/UX Design">تصميم UI/UX</div><div class="service-desc" data-ar="واجهات مستخدم احترافية وجذابة تعكس هوية علامتك وتمنح زوارك تجربة استثنائية" data-en="Professional interfaces that reflect your brand identity and give visitors an exceptional experience">واجهات مستخدم احترافية وجذابة تعكس هوية علامتك وتمنح زوارك تجربة استثنائية</div></div>
+    <div class="service-card reveal d2"><div class="card-num">03</div><div class="service-icon-wrap">🛒</div><div class="service-name" data-ar="متاجر إلكترونية" data-en="E-Commerce Stores">متاجر إلكترونية</div><div class="service-desc" data-ar="متاجر متكاملة مع إدارة منتجات وطلبات وبوابات دفع وإدارة مخزون تلقائية" data-en="Full e-commerce stores with product management, orders, payments and auto inventory">متاجر متكاملة مع إدارة منتجات وطلبات وبوابات دفع وإدارة مخزون تلقائية</div></div>
+    <div class="service-card reveal"><div class="card-num">04</div><div class="service-icon-wrap">📱</div><div class="service-name" data-ar="تطبيقات الويب" data-en="Web Applications">تطبيقات الويب</div><div class="service-desc" data-ar="تطبيقات تفاعلية قوية مع قواعد بيانات حية وإشعارات وأنظمة صلاحيات متعددة" data-en="Powerful interactive apps with live databases, notifications and multi-role access">تطبيقات تفاعلية قوية مع قواعد بيانات حية وإشعارات وأنظمة صلاحيات متعددة</div></div>
+    <div class="service-card reveal d1"><div class="card-num">05</div><div class="service-icon-wrap">📊</div><div class="service-name" data-ar="التسويق الرقمي" data-en="Digital Marketing">التسويق الرقمي</div><div class="service-desc" data-ar="استراتيجيات فعّالة لتنمية متابعيك وزيادة المبيعات وبناء حضور قوي عبر الإنترنت" data-en="Effective strategies to grow your audience, boost sales and build a strong online presence">استراتيجيات فعّالة لتنمية متابعيك وزيادة المبيعات وبناء حضور قوي عبر الإنترنت</div></div>
+    <div class="service-card reveal d2"><div class="card-num">06</div><div class="service-icon-wrap">🔄</div><div class="service-name" data-ar="الأتمتة والـ API" data-en="Automation & API">الأتمتة والـ API</div><div class="service-desc" data-ar="ربط الأنظمة وأتمتة العمليات باستخدام Make.com وGoogle Sheets وقوالب ذكية" data-en="Connect systems and automate workflows using Make.com, Google Sheets and smart templates">ربط الأنظمة وأتمتة العمليات باستخدام Make.com وGoogle Sheets وقوالب ذكية</div></div>
+    <div class="service-card reveal"><div class="card-num">07</div><div class="service-icon-wrap">📄</div><div class="service-name" data-ar="كتابة CV احترافية" data-en="Professional CV Writing">كتابة CV احترافية</div><div class="service-desc" data-ar="سير ذاتية مميزة تفتح لك أبواب الفرص وتجعلك تبرز بين المتقدمين" data-en="Distinctive professional resumes that open doors and make you stand out">سير ذاتية مميزة تفتح لك أبواب الفرص وتجعلك تبرز بين المتقدمين</div></div>
+    <div class="service-card reveal d1"><div class="card-num">08</div><div class="service-icon-wrap">🔒</div><div class="service-name" data-ar="الفحص الأمني" data-en="Security Audit">الفحص الأمني</div><div class="service-desc" data-ar="فحص أمني شامل لمواقعك وتطبيقاتك لكشف الثغرات وضمان الحماية الكاملة" data-en="Comprehensive security testing to detect vulnerabilities and ensure full protection">فحص أمني شامل لمواقعك وتطبيقاتك لكشف الثغرات وضمان الحماية الكاملة</div></div>
+  </div>
+</section>
+
+<!-- ══ WHY ══ -->
+<section id="why">
+  <div class="container center">
+    <div class="section-tag" data-ar="المميزات" data-en="ADVANTAGES">المميزات</div>
+    <h2 class="section-title reveal"><span class="grad" data-ar="لماذا تختار ZULU؟" data-en="Why Choose ZULU?">لماذا تختار ZULU؟</span></h2>
+  </div>
+  <div class="why-grid">
+    <div class="why-card reveal"><div class="why-icon">⚡</div><div class="why-title" data-ar="تسليم سريع" data-en="Fast Delivery">تسليم سريع</div><div class="why-desc" data-ar="أسرع وقت تسليم مع ضمان الجودة الكاملة في كل مشروع" data-en="Fastest delivery with full quality guarantee in every project">أسرع وقت تسليم مع ضمان الجودة الكاملة في كل مشروع</div></div>
+    <div class="why-card reveal d1"><div class="why-icon">💎</div><div class="why-title" data-ar="جودة عالية" data-en="High Quality">جودة عالية</div><div class="why-desc" data-ar="كود نظيف ومنظم مع أعلى معايير الأداء والتصميم الاحترافي" data-en="Clean organized code with highest performance standards">كود نظيف ومنظم مع أعلى معايير الأداء والتصميم الاحترافي</div></div>
+    <div class="why-card reveal d2"><div class="why-icon">🛡️</div><div class="why-title" data-ar="ضمان ما بعد التسليم" data-en="Post-Delivery Support">ضمان ما بعد التسليم</div><div class="why-desc" data-ar="دعم وصيانة مستمرة لضمان عمل مشروعك بشكل مثالي دائماً" data-en="Continuous support and maintenance for your project">دعم وصيانة مستمرة لضمان عمل مشروعك بشكل مثالي دائماً</div></div>
+    <div class="why-card reveal"><div class="why-icon">🌍</div><div class="why-title" data-ar="دعم متعدد اللغات" data-en="Multilingual">دعم متعدد اللغات</div><div class="why-desc" data-ar="مواقع تدعم العربية والإنجليزية والفرنسية وغيرها" data-en="Sites supporting Arabic, English, French and more">مواقع تدعم العربية والإنجليزية والفرنسية وغيرها</div></div>
+    <div class="why-card reveal d1"><div class="why-icon">📱</div><div class="why-title" data-ar="Mobile First" data-en="Mobile First">Mobile First</div><div class="why-desc" data-ar="جميع المشاريع مصممة أولاً للجوال مع تجربة مثالية على كل الأجهزة" data-en="All projects designed mobile-first for perfect experience everywhere">جميع المشاريع مصممة أولاً للجوال مع تجربة مثالية على كل الأجهزة</div></div>
+    <div class="why-card reveal d2"><div class="why-icon">💬</div><div class="why-title" data-ar="تواصل مباشر" data-en="Direct Contact">تواصل مباشر</div><div class="why-desc" data-ar="تواصل مباشر معي عبر واتساب في أي وقت بدون وسطاء" data-en="Direct communication via WhatsApp anytime, no middlemen">تواصل مباشر معي عبر واتساب في أي وقت بدون وسطاء</div></div>
+  </div>
+</section>
+
+<!-- ══ REVIEWS ══ -->
+<section id="reviews" class="sec-alt">
+  <div class="container center">
+    <div class="section-tag" data-ar="آراء العملاء" data-en="REVIEWS">آراء العملاء</div>
+    <h2 class="section-title reveal"><span class="grad" data-ar="ماذا يقول عملائي" data-en="What My Clients Say">ماذا يقول عملائي</span></h2>
+  </div>
+  <div class="reviews-grid">
+    <div class="review-card reveal">
+      <div class="review-stars">★★★★★</div>
+      <div class="review-text" data-ar="عمل رائع واحترافي! الموقع تم في وقت قياسي وتجاوز توقعاتي بكثير. أنصح الجميع بـ ZULU." data-en="Amazing professional work! The site was done in record time and exceeded my expectations. I highly recommend ZULU.">عمل رائع واحترافي! الموقع تم في وقت قياسي وتجاوز توقعاتي بكثير. أنصح الجميع بـ ZULU.</div>
+      <div class="review-author"><div class="review-avatar">أ</div><div><div class="review-name" data-ar="أحمد العمري" data-en="Ahmed Al-Omari">أحمد العمري</div><div class="review-role" data-ar="صاحب متجر إلكتروني" data-en="E-Commerce Owner">صاحب متجر إلكتروني</div></div></div>
+    </div>
+    <div class="review-card reveal d1">
+      <div class="review-stars">★★★★★</div>
+      <div class="review-text" data-ar="أفضل مطور تعاملت معه. فهم متطلباتي من أول رسالة وقدم نتيجة مذهلة. الدعم بعد التسليم ممتاز." data-en="Best developer I've worked with. Understood my requirements from the first message and delivered something amazing.">أفضل مطور تعاملت معه. فهم متطلباتي من أول رسالة وقدم نتيجة مذهلة. الدعم بعد التسليم ممتاز.</div>
+      <div class="review-author"><div class="review-avatar">س</div><div><div class="review-name" data-ar="سارة بن علي" data-en="Sara Ben Ali">سارة بن علي</div><div class="review-role" data-ar="مديرة تسويق" data-en="Marketing Manager">مديرة تسويق</div></div></div>
+    </div>
+    <div class="review-card reveal d2">
+      <div class="review-stars">★★★★★</div>
+      <div class="review-text" data-ar="موقعي أصبح أسرع بـ 3 أضعاف وزادت مبيعاتي بشكل ملحوظ. استثمار يستحق كل قرش." data-en="My site became 3x faster and my sales increased significantly. An investment worth every penny.">موقعي أصبح أسرع بـ 3 أضعاف وزادت مبيعاتي بشكل ملحوظ. استثمار يستحق كل قرش.</div>
+      <div class="review-author"><div class="review-avatar">ي</div><div><div class="review-name" data-ar="يوسف مراد" data-en="Youssef Murad">يوسف مراد</div><div class="review-role" data-ar="رائد أعمال" data-en="Entrepreneur">رائد أعمال</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CONTACT ══ -->
+<section id="contact">
+  <div class="container center">
+    <div class="section-tag" data-ar="تواصل" data-en="CONTACT">تواصل</div>
+    <h2 class="section-title reveal"><span class="grad" data-ar="لنبني شيئاً رائعاً معاً" data-en="Let's Build Something Great">لنبني شيئاً رائعاً معاً</span></h2>
+    <p class="section-sub reveal d1" style="margin:0 auto"
+       data-ar="أرسل تفاصيل مشروعك وسأرد عليك خلال ساعات عبر واتساب مباشرة"
+       data-en="Send your project details and I'll reply within hours directly on WhatsApp">
+      أرسل تفاصيل مشروعك وسأرد عليك خلال ساعات عبر واتساب مباشرة
+    </p>
+  </div>
+  <div class="contact-wrap">
+    <div class="contact-card reveal">
+      <div class="form-grid">
+        <div class="form-group">
+          <label data-ar="الاسم الكامل" data-en="Full Name">الاسم الكامل</label>
+          <input type="text" id="fname" placeholder="مصطفى أحمد" data-ar-placeholder="مصطفى أحمد" data-en-placeholder="John Smith">
+        </div>
+        <div class="form-group">
+          <label data-ar="رقم الهاتف" data-en="Phone Number">رقم الهاتف</label>
+          <input type="tel" id="fphone" placeholder="+213 655 295 217" style="direction:ltr">
+        </div>
+      </div>
+      <div class="form-group">
+        <label data-ar="نوع الخدمة" data-en="Service Type">نوع الخدمة</label>
+        <select id="fservice">
+          <option value="" data-ar="اختر الخدمة..." data-en="Choose service...">اختر الخدمة...</option>
+          <option data-ar="بناء موقع إلكتروني" data-en="Website Development">بناء موقع إلكتروني</option>
+          <option data-ar="متجر إلكتروني" data-en="E-Commerce Store">متجر إلكتروني</option>
+          <option data-ar="تصميم UI/UX" data-en="UI/UX Design">تصميم UI/UX</option>
+          <option data-ar="تطبيق ويب" data-en="Web Application">تطبيق ويب</option>
+          <option data-ar="التسويق الرقمي" data-en="Digital Marketing">التسويق الرقمي</option>
+          <option data-ar="الأتمتة والـ API" data-en="Automation & API">الأتمتة والـ API</option>
+          <option data-ar="كتابة CV" data-en="CV Writing">كتابة CV</option>
+          <option data-ar="الفحص الأمني" data-en="Security Audit">الفحص الأمني</option>
+          <option data-ar="أخرى" data-en="Other">أخرى</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label data-ar="الميزانية التقريبية" data-en="Approximate Budget">الميزانية التقريبية</label>
+        <select id="fbudget">
+          <option value="" data-ar="اختر النطاق..." data-en="Choose range...">اختر النطاق...</option>
+          <option data-ar="أقل من 5,000 دج" data-en="Less than $50">أقل من 5,000 دج</option>
+          <option data-ar="5,000 - 15,000 دج" data-en="$50 - $150">5,000 - 15,000 دج</option>
+          <option data-ar="15,000 - 30,000 دج" data-en="$150 - $300">15,000 - 30,000 دج</option>
+          <option data-ar="أكثر من 30,000 دج" data-en="More than $300">أكثر من 30,000 دج</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label data-ar="تفاصيل المشروع" data-en="Project Details">تفاصيل المشروع</label>
+        <textarea id="fmessage"
+          placeholder="اشرح فكرتك ومتطلباتك بالتفصيل..."
+          data-ar-placeholder="اشرح فكرتك ومتطلباتك بالتفصيل..."
+          data-en-placeholder="Describe your idea and requirements in detail..."></textarea>
+      </div>
+      <button class="btn-whatsapp" onclick="sendToWhatsApp()">
+        <span style="font-size:1.3rem">💬</span>
+        <span data-ar="إرسال عبر واتساب" data-en="Send via WhatsApp">إرسال عبر واتساب</span>
+      </button>
+      <div class="success-msg" id="successMsg">
+        ✅ <span data-ar="جاري فتح واتساب... شكراً لتواصلك!" data-en="Opening WhatsApp... Thank you!">جاري فتح واتساب... شكراً لتواصلك!</span>
+      </div>
+      <div class="contact-info">
+        <div class="info-item"><div class="info-icon">💬</div><div><div class="info-label" data-ar="واتساب" data-en="WhatsApp">واتساب</div><div class="info-val">+213 655 295 217</div></div></div>
+        <div class="info-item"><div class="info-icon">✉️</div><div><div class="info-label" data-ar="البريد الإلكتروني" data-en="Email">البريد الإلكتروني</div><div class="info-val">moslop984@gmail.com</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="footer-logo">ZULU</div>
+  <p>
+    © 2025 &nbsp;·&nbsp;
+    <span data-ar="جميع الحقوق محفوظة" data-en="All Rights Reserved">جميع الحقوق محفوظة</span>
+    &nbsp;·&nbsp;
+    <a href="https://wa.me/213655295217" target="_blank">WhatsApp</a>
+    &nbsp;·&nbsp;
+    <a href="mailto:moslop984@gmail.com">Email</a>
+  </p>
+</footer>
+
+<script>
+// ══ THEME ══
+let isDark = false;
+function toggleTheme() {
+  isDark = !isDark;
+  document.body.classList.toggle('dark', isDark);
+  document.getElementById('themeBtn').textContent = isDark ? '☀️' : '🌙';
+}
+
+// ══ LANGUAGE ══
+let lang = 'ar';
+function toggleLang() {
+  lang = lang === 'ar' ? 'en' : 'ar';
+  applyLang();
+}
+function applyLang() {
+  const isEn = lang === 'en';
+  document.documentElement.lang = lang;
+  document.documentElement.dir = isEn ? 'ltr' : 'rtl';
+  document.body.classList.toggle('ltr', isEn);
+  document.getElementById('langBtn').textContent = isEn ? 'ع' : 'EN';
+  document.querySelectorAll('[data-ar]').forEach(el => {
+    el.textContent = isEn ? el.dataset.en : el.dataset.ar;
+  });
+  document.querySelectorAll('[data-ar-placeholder]').forEach(el => {
+    el.placeholder = isEn ? el.dataset.enPlaceholder : el.dataset.arPlaceholder;
+  });
+  document.querySelectorAll('select option[data-ar]').forEach(el => {
+    el.textContent = isEn ? el.dataset.en : el.dataset.ar;
+  });
+}
+
+// ══ WHATSAPP ══
+function sendToWhatsApp() {
+  const name    = document.getElementById('fname').value.trim();
+  const phone   = document.getElementById('fphone').value.trim();
+  const service = document.getElementById('fservice').value.trim();
+  const budget  = document.getElementById('fbudget').value.trim();
+  const msg     = document.getElementById('fmessage').value.trim();
+
+  if (!msg) {
+    alert(lang === 'ar' ? '⚠️ الرجاء كتابة تفاصيل مشروعك' : '⚠️ Please write your project details');
+    return;
+  }
+
+  const lines = lang === 'ar'
+    ? ['━━━━━━━━━━━━━━━━━━━━','🌐 *طلب جديد — ZULU*','━━━━━━━━━━━━━━━━━━━━',
+        name    ? `👤 *الاسم:* ${name}`    : '',
+        phone   ? `📞 *الهاتف:* ${phone}`  : '',
+        service ? `🛠️ *الخدمة:* ${service}` : '',
+        budget  ? `💰 *الميزانية:* ${budget}` : '',
+        `📝 *التفاصيل:*\n${msg}`,
+        '━━━━━━━━━━━━━━━━━━━━']
+    : ['━━━━━━━━━━━━━━━━━━━━','🌐 *New Request — ZULU*','━━━━━━━━━━━━━━━━━━━━',
+        name    ? `👤 *Name:* ${name}`    : '',
+        phone   ? `📞 *Phone:* ${phone}`  : '',
+        service ? `🛠️ *Service:* ${service}` : '',
+        budget  ? `💰 *Budget:* ${budget}` : '',
+        `📝 *Details:*\n${msg}`,
+        '━━━━━━━━━━━━━━━━━━━━'];
+
+  const text = lines.filter(Boolean).join('\n');
+  window.open(`https://wa.me/213655295217?text=${encodeURIComponent(text)}`, '_blank');
+
+  const s = document.getElementById('successMsg');
+  s.style.display = 'block';
+  setTimeout(() => s.style.display = 'none', 5000);
+}
+
+// ══ SCROLL REVEAL ══
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
